@@ -1,6 +1,6 @@
 from base64 import b64encode
 
-from flask import Blueprint, flash, redirect, render_template, url_for, request
+from flask import Blueprint, flash, redirect, render_template, url_for, request, abort, Response
 from flask_login import login_required
 
 from src.forms.produto import ProdutoForm
@@ -47,6 +47,25 @@ def add():
 
     return render_template('produto/add_edit.jinja2', form=form,
                            title="Adicionar novo produto")
+
+@bp.route('/imagem/<uuid:id_produto>', methods=['GET'])
+def imagem(id_produto):
+    produto = Produto.get_by_id(id_produto)
+    if produto is None:
+        return abort(404)
+    conteudo, tipo = produto.imagem
+    return Response(conteudo, mimetype=tipo)
+
+@bp.route('/thumbnail/<uuid:id_produto>/<int:size>', methods=['GET'])
+@bp.route('/thumbnail/<uuid:id_produto>', methods=['GET'])
+def thumbnail(id_produto, size=128):
+    produto = Produto.get_by_id(id_produto)
+    if produto is None:
+        return abort(404)
+    conteudo, tipo = produto.thumbnail(size)
+    return Response(conteudo, mimetype=tipo)
+
+
 
 
 
