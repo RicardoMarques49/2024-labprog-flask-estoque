@@ -3,7 +3,7 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms.fields.choices import SelectField
 from wtforms.fields.numeric import IntegerField, DecimalField
 from wtforms.fields.simple import StringField, BooleanField, SubmitField
-from wtforms.validators import InputRequired, Length, NumberRange
+from wtforms.validators import InputRequired, Length, NumberRange, DataRequired
 
 
 class ProdutoForm(FlaskForm):
@@ -17,8 +17,8 @@ class ProdutoForm(FlaskForm):
     estoque = IntegerField(label="Estoque",
                            validators=[InputRequired(message="É preciso definir o estoque"),
                                        NumberRange(min=0, message="O estoque precisa ser positivo")])
-    ativo = BooleanField(label="Ativo?",
-                         validators=[InputRequired(message="É preciso dizer se o produto está ou não ativo")])
+    ativo = BooleanField(label="Ativo?")
+
     foto = FileField(label="Foto do produto",
                      validators=[FileAllowed(['jpg', 'png'], message = "Apenas arquivos JPG ou PNG")])
     categoria = SelectField(label="categoria do produto",
