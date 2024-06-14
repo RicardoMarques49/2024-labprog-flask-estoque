@@ -23,6 +23,8 @@ class ProdutoForm(FlaskForm):
                      validators=[FileAllowed(['jpg', 'png'], message = "Apenas arquivos JPG ou PNG")])
     categoria = SelectField(label="categoria do produto",
                             validators=[InputRequired(message="Selecione uma categoria")])
+    removerfoto = BooleanField(label="Remover a foto atual?",
+                               default=False)
     submit = SubmitField()
 
 
