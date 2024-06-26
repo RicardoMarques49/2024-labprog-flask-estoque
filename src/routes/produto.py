@@ -3,11 +3,13 @@ from base64 import b64encode
 from flask import Blueprint, flash, redirect, render_template, url_for, request, abort, Response
 from flask_login import login_required
 from werkzeug.exceptions import NotFound
+from sqlalchemy import func
 
 from src.forms.produto import ProdutoForm
 from src.models.categoria import Categoria
 from src.models.produto import Produto
 from src.modules import db
+
 
 bp = Blueprint('produto', __name__, url_prefix="/produto")
 
@@ -147,6 +149,18 @@ def thumbnail(id_produto, size=128):
         return abort(404)
     conteudo, tipo = produto.thumbnail(size)
     return Response(conteudo, mimetype=tipo)
+
+@bp.route('/relatorio', methods=['GET', 'POST'])
+@login_required
+def relatorio():
+    # Consulta para obter o total de produtos por categoria e o valor em estoque
+    resultados = db.session.query(
+        Categoria.nome,
+        db.func.count(Produto.id).label('total_produtos'),
+        db.func.sum(Produto.preco * Produto.estoque).label('valor_estoque')
+    ).join(Produto, Produto.categoria_id == Categoria.id).group_by(Categoria.nome).all()
+
+    return render_template('produto/relatorio.jinja2', resultados=resultados)
 
 
 
